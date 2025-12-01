@@ -9,6 +9,10 @@ fun main() {
         part1(parsedInput)
     }
 
+    runPuzzle(2) {
+        part2(parsedInput)
+    }
+
 }
 
 data class Rotation(
@@ -61,4 +65,40 @@ tailrec fun applyRotations(
 
 fun part1(input: List<Rotation>): Int {
     return applyRotations(input).count { it == 0 }
+}
+
+fun part2(input: List<Rotation>): Int {
+
+    var currentPosition = 50
+    var zeroCount = 0
+
+    input.forEach { rotation ->
+        val newPosition = rotateDial(currentPosition = currentPosition, rotation = rotation)
+
+        if (newPosition == 0) {
+            zeroCount += 1
+        }
+
+        zeroCount += rotation.steps / 100
+
+        val actualSteps = rotation.steps % 100
+        if (actualSteps > 0 && newPosition != 0 && currentPosition != 0) {
+            when (rotation.direction) {
+                Rotation.Direction.LEFT -> {
+                    if (newPosition > currentPosition) {
+                        zeroCount += 1
+                    }
+                }
+                Rotation.Direction.RIGHT -> {
+                    if (newPosition < currentPosition) {
+                        zeroCount += 1
+                    }
+                }
+            }
+        }
+
+        currentPosition = newPosition
+    }
+
+    return zeroCount
 }

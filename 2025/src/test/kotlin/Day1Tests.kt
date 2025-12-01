@@ -72,6 +72,15 @@ class Day1Tests {
         assertThat(actual).isEqualTo(expected)
     }
 
+    @Test
+    fun testPart2() {
+        val expected = 6
+
+        val actual = part2(parseInput(example.lines()))
+
+        assertThat(actual).isEqualTo(expected)
+    }
+
     companion object {
 
         val example = """
