@@ -3,9 +3,10 @@
 
 # Ignore Gradle build output directory
 build
+**/.kotlin/
 
 # Project exclude paths
-/2024/out/
-/2024/out/production/classes/
-/utils/out/
-/utils/out/production/classes/
+**/out/**
+**/src/main/resources/*
+/.idea/
+**/src/main/resources/
