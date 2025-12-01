@@ -35,15 +35,13 @@ fun rotateDial(
     currentPosition: Int = 50,
     rotation: Rotation,
 ): Int {
+    val steps = rotation.steps % 100
     val newPosition = when (rotation.direction) {
-        Rotation.Direction.LEFT -> (currentPosition - rotation.steps).let {
-            val corrected = it % 100
-            if (corrected < 0) 100 + corrected else corrected
+        Rotation.Direction.LEFT -> (currentPosition - steps).let {
+            if (it < 0) 100 + it else it
         }
 
-        Rotation.Direction.RIGHT -> (currentPosition + rotation.steps).let {
-            it % 100
-        }
+        Rotation.Direction.RIGHT -> (currentPosition + steps) % 100
     }
     return newPosition
 }
