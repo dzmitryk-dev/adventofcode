@@ -8,6 +8,9 @@ fun main() {
     runPuzzle(1) {
         part1(input)
     }
+    runPuzzle(2) {
+        part2(input)
+    }
 }
 
 fun parseInput(input: String): List<Pair<String, String>> {
@@ -62,6 +65,80 @@ fun part1(input: List<Pair<String, String>>): Long {
     return input.stream()
         .parallel()
         .map { (start, end) -> verifyRange(start, end).sum() }
+        .mapToLong { it }
+        .sum()
+}
+
+fun verifyRange2(start: String, end: String): List<Long> {
+    val startLong = start.toLong()
+    val endLong = end.toLong()
+
+    val candidates = mutableSetOf<Long>()
+
+    for (i in 1..start.length / 2) {
+        if (start.length % i > 0) {
+            continue
+        }
+
+        val r = start.length / i
+
+        var n = start.take(i).toLong()
+
+        do {
+            val candidate = "$n".repeat(r).toLong()
+
+            if (candidate < startLong) {
+                n += 1
+                continue
+            }
+
+            if (candidate > endLong) {
+                break
+            }
+
+            candidates.add(candidate)
+            n += 1
+        } while (true)
+    }
+
+    if (end.length > start.length) {
+        for (i in 1..end.length / 2) {
+            if (end.length % i > 0) {
+                continue
+            }
+
+            val r = end.length / i
+
+            var n = (1 until i).fold(1) { acc, _ -> acc * 10 }
+
+            do {
+                val candidate = "$n".repeat(r).toLong()
+
+                if (candidate < startLong) {
+                    n += 1
+                    continue
+                }
+
+                if (candidate > endLong) {
+                    break
+                }
+
+                candidates.add(candidate)
+                n += 1
+            } while (true)
+        }
+    }
+
+    return candidates.toList()
+}
+
+fun part2(input: List<Pair<String, String>>): Long {
+    return input.stream()
+        .parallel()
+        .map { (start, end) -> verifyRange2(start, end)
+//            .also { println("Range: $start - $end. Candidatetes $it") }
+            .sum()
+        }
         .mapToLong { it }
         .sum()
 }

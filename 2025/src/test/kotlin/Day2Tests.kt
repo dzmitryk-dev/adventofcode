@@ -1,6 +1,8 @@
 import day2.parseInput
 import day2.part1
+import day2.part2
 import day2.verifyRange
+import day2.verifyRange2
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
@@ -43,7 +45,7 @@ class Day2Tests {
             TestCase("38593856" to "38593862", listOf(38593859)),
             TestCase("565653" to "565659", emptyList()),
             TestCase("824824821" to "824824827", emptyList()),
-            TestCase("2121212118" to "2121212124", emptyList())
+            TestCase("2121212118" to "2121212124", emptyList()),
         ).map { testCase ->
             val (start, end) = testCase.range
             val expectedInvalidIds = testCase.expectedInvalidIds
@@ -60,6 +62,42 @@ class Day2Tests {
         val expected = 1227775554
 
         val actual = part1(parseInput(testInput))
+
+        assertThat(expected).isEqualTo(actual)
+    }
+
+    @TestFactory
+    fun testVerifyRange2(): Stream<DynamicTest> =
+        Stream.of(
+            TestCase("11" to "22", listOf(11, 22)),
+            TestCase("95" to "115", listOf(99, 111)),
+            TestCase("998" to "1012", listOf(999, 1010)),
+            TestCase("1188511880" to "1188511890", listOf(1188511885)),
+            TestCase("222220" to "222224", listOf(222222)),
+            TestCase("1698522" to "1698528", emptyList()),
+            TestCase("446443" to "446449", listOf(446446)),
+            TestCase("38593856" to "38593862", listOf(38593859)),
+            TestCase("565653" to "565659", listOf(565656)),
+            TestCase("824824821" to "824824827", listOf(824824824)),
+            TestCase("2121212118" to "2121212124", listOf(2121212121)),
+            TestCase("85618" to "110471", listOf(88888, 99999, 100100, 101010, 101101, 102102, 103103, 104104, 105105, 106106, 107107, 108108, 109109, 110110)),
+            TestCase("115" to "282", listOf(222))
+        ).map { testCase ->
+            val (start, end) = testCase.range
+            val expectedInvalidIds = testCase.expectedInvalidIds
+
+            DynamicTest.dynamicTest("Test Verify Range 2 $testCase") {
+                val actualInvalidIds = verifyRange2(start, end)
+
+                assertThat(actualInvalidIds).containsExactlyInAnyOrderElementsOf(expectedInvalidIds)
+            }
+        }
+
+    @Test
+    fun testPart2() {
+        val expected = 4174379265
+
+        val actual = part2(parseInput(testInput))
 
         assertThat(expected).isEqualTo(actual)
     }
