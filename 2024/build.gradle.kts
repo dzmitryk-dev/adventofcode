@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.0.21"
+    alias(libs.plugins.kotlin.jvm)
     application
 }
 
@@ -8,12 +8,12 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation(libs.kotlinx.coroutines.core)
     implementation("com.adventofcode:aoc-utils:1.0.0")
 
-    testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
-    testImplementation("org.assertj:assertj-core:3.21.0")
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.junit.jupiter.params)
+    testImplementation(libs.assertj.core)
 }
 
 application {

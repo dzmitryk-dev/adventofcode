@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
+    alias(libs.plugins.kotlin.jvm)
     `maven-publish`
 }
 
@@ -11,10 +11,10 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.3")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.3")
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
+    testImplementation(libs.junit.jupiter.engine)
 }
 
 tasks.test {
