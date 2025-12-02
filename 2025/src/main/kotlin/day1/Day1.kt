@@ -1,3 +1,5 @@
+package day1
+
 import com.adventofcode.utils.readInput
 import com.adventofcode.utils.runPuzzle
 

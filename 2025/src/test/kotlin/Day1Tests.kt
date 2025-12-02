@@ -1,3 +1,9 @@
+import day1.Rotation
+import day1.applyRotations
+import day1.parseInput
+import day1.part1
+import day1.part2
+import day1.rotateDial
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 
