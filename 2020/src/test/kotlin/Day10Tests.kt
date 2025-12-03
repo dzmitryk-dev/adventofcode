@@ -1,4 +1,5 @@
 import day10.part1
+import day10.part2
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 
@@ -16,6 +17,20 @@ class Day10Tests {
         val actual = part1(textInput2.lines())
 
         assertThat(actual).isEqualTo(220)
+    }
+
+    @Test
+    fun testPart2_1() {
+        val actual = part2(textInput1.lines())
+
+        assertThat(actual).isEqualTo(8)
+    }
+
+    @Test
+    fun testPart2_2() {
+        val actual = part2(textInput2.lines())
+
+        assertThat(actual).isEqualTo(19208)
     }
 
     companion object {
