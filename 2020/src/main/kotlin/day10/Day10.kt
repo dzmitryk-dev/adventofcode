@@ -9,6 +9,9 @@ fun main() {
     runPuzzle(1) {
         part1(input)
     }
+    runPuzzle(2) {
+        part2(input)
+    }
 }
 
 private fun adapters(input: List<String>): List<Int> {
@@ -30,11 +33,13 @@ fun part1(input: List<String>): Int {
 fun part2(input: List<String>): Long {
     val adapters = adapters(input)
 
-    val waysToReach = mutableMapOf(0 to 1L)
-
-    for (adapter in adapters.drop(1)) {
-        waysToReach[adapter] = (1..3).sumOf { diff -> waysToReach[adapter - diff] ?: 0L }
+    val waysToReach = LongArray(adapters.last() + 1) { 0L }.also {
+        it[0] = 1L
     }
 
-    return waysToReach.getValue(adapters.last())
+    for (adapter in adapters.drop(1)) {
+        waysToReach[adapter] = (1..3).sumOf { diff -> waysToReach.getOrElse(adapter - diff) { 0L } }
+    }
+
+    return waysToReach.last()
 }
