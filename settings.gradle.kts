@@ -6,5 +6,6 @@ rootProject.name = "adventofcode"
 
 // Include included builds (composite build)
 includeBuild("utils")
+includeBuild("2020")
 includeBuild("2024")
 includeBuild("2025")
