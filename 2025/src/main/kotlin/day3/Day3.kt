@@ -9,6 +9,9 @@ fun main() {
     runPuzzle(1) {
         part1(input)
     }
+    runPuzzle(2) {
+        part2(input)
+    }
 }
 
 fun findJoltage(bank: CharSequence): Int {
@@ -37,3 +40,24 @@ fun findJoltage(bank: CharSequence): Int {
 }
 
 fun part1(input: List<String>): Int = input.sumOf { findJoltage(it) }
+
+fun findJoltageV2(bank: CharSequence, windowSize: Int = 2): Long {
+
+    val digits = CharArray(windowSize) { 0.toChar() }
+
+    bank.windowed(size = windowSize, step = 1)
+        .forEach { s ->
+            for (i in s.indices) {
+                if (s[i] > digits[i]) {
+                    for (j in i..s.lastIndex) {
+                        digits[j] = s[j]
+                    }
+                    break
+                }
+            }
+        }
+
+    return digits.joinToString("").toLong()
+}
+
+fun part2(input: List<String>): Long = input.sumOf { findJoltageV2(it, 12) }
