@@ -8,6 +8,10 @@ fun main() {
     runPuzzle(1) {
         part1(input)
     }
+
+    runPuzzle(2) {
+        part2(input)
+    }
 }
 
 fun findAccessibleRolls(list: List<CharSequence>): Collection<Point> {
@@ -33,4 +37,31 @@ fun findAccessibleRolls(list: List<CharSequence>): Collection<Point> {
 fun part1(list: List<CharSequence>): Int {
     val accessibleRolls = findAccessibleRolls(list)
     return accessibleRolls.size
+}
+
+fun removeRolls(list: List<CharSequence>, points: Collection<Point>): List<CharSequence> {
+    return list.mapIndexed { line, lineString ->
+        val chars = lineString.toString().toCharArray()
+        points.filter { p -> p.line ==  line }
+            .forEach { p ->
+                chars[p.col] = '.'
+            }
+        String(chars)
+    }
+}
+
+fun part2(list: List<CharSequence>): Int {
+    var removedRolls = 0
+    var field = list
+
+    do {
+        val accessibleRolls = findAccessibleRolls(field)
+        val afterRemoval = removeRolls(field, accessibleRolls)
+
+        removedRolls += accessibleRolls.size
+        field = afterRemoval
+    } while (accessibleRolls.isNotEmpty())
+
+
+    return removedRolls
 }
