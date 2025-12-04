@@ -33,6 +33,18 @@ fun Point.pointsAround(): List<Point> =
         Point(line + 1, col)
     )
 
+fun Point.allPointsAround(): List<Point> =
+    listOf(
+        Point(line, col - 1),
+        Point(line - 1, col - 1),
+        Point(line - 1, col),
+        Point(line - 1, col + 1),
+        Point(line, col + 1),
+        Point(line + 1, col + 1),
+        Point(line + 1, col),
+        Point(line + 1, col - 1)
+    )
+
 
 fun <T> runPuzzle(number: Int, block: () -> T) {
     println("Puzzle $number Started")
