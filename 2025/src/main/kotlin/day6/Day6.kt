@@ -10,6 +10,10 @@ fun main() {
     runPuzzle(1) {
         part1(input)
     }
+
+    runPuzzle(2) {
+        part2(input)
+    }
 }
 
 data class Problem(
@@ -48,7 +52,7 @@ fun String.toOperation(): Operation {
 }
 
 fun parseInput(input: List<String>): List<Problem> {
-    val preparedInput = input.map { it.split(" ").filterNot { it.isEmpty() } }
+    val preparedInput = input.map { s -> s.split(" ").filterNot { e -> e.isEmpty() } }
     val operations = preparedInput.last()
     val numbersList = preparedInput.subList(0, preparedInput.lastIndex).map { l -> l.map { it.toLong() } }
 
@@ -74,4 +78,63 @@ fun calculation(problem: Problem): Long {
 
 fun part1(input: List<String>): Long {
     return parseInput(input).sumOf { p -> calculation(p) }
+}
+
+fun parseInput2(input: List<String>): List<Problem> {
+    var commandString = input.last()
+    val numberStrings = input.subList(0, input.lastIndex)
+
+    var index = commandString.lastIndex
+
+    // Quick hack
+    if (!numberStrings.all { it.lastIndex == index }) {
+        commandString += " ".repeat(input.first().length - commandString.length)
+        index = commandString.lastIndex
+    }
+
+    val problems = mutableListOf<Problem>()
+
+    val numbers = mutableListOf<Long>()
+    var operation: Operation? = null
+
+    while (index >= 0) {
+        val numberString = numberStrings.map { s -> s[index] }
+            .joinToString("")
+            .trim()
+        if (numberString.isNotEmpty()) {
+            numbers.add(numberString.toLong())
+        }
+
+        val commandChar = commandString[index]
+        if (commandChar != ' ') {
+            operation = commandChar.toString().toOperation()
+        }
+
+        if (commandChar == ' ' && numberString.isEmpty()) {
+            problems.add(
+                Problem(
+                    numbers = numbers.toLongArray(),
+                    operation = operation!!
+                ),
+            )
+
+            numbers.clear()
+            operation = null
+        }
+
+        index -= 1
+    }
+
+    problems.add(
+        Problem(
+            numbers = numbers.toLongArray(),
+            operation = operation!!
+        ),
+    )
+
+    return problems
+}
+
+fun part2(input: List<String>): Long {
+    return parseInput2(input).sumOf { p -> calculation(p) }
 }
