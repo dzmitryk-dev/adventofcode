@@ -1,4 +1,5 @@
 import day7.part1
+import day7.part2
 import day7.traceTachyon
 import day7.visualizeTracing
 import org.assertj.core.api.Assertions.assertThat
@@ -44,6 +45,15 @@ class Day7Tests {
         val actual  = part1(preparedInput)
 
         assertThat(actual).isEqualTo(21)
+    }
+
+    @Test
+    fun testPart2() {
+        val preparedInput = testInput.lines().map { it.toCharArray() }
+
+        val actual = part2(preparedInput)
+
+        assertThat(actual).isEqualTo(40)
     }
 
     companion object {

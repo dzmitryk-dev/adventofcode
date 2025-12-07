@@ -12,6 +12,10 @@ fun main() {
     runPuzzle(1) {
         part1(input)
     }
+
+    runPuzzle(2) {
+        part2(input)
+    }
 }
 
 data class Trace(
@@ -71,4 +75,32 @@ fun part1(input: List<CharArray>): Int {
     val result = traceTachyon(input)
 //    visualizeTracing(input, result.points)
     return result.splitCounts
+}
+
+fun part2(field: List<CharArray>): Long  {
+    val start = Point(0, field.first().indexOfFirst { it == 'S' })
+
+    val result = field.drop(1)
+        .also {
+            println("Lines to compute: ${it.size}")
+        }
+        .foldIndexed(mapOf(start to 1L)) { index, candidates, line ->
+            val newCandidates = mutableMapOf<Point, Long>()
+            candidates.entries.forEach { (p, v) ->
+                if (line[p.col] == '^') {
+                    val p1 = p.copy(first = index + 1, second = p.col - 1)
+                    val p2 = p.copy(first = index + 1, second = p.col + 1)
+                    newCandidates[p1] = newCandidates.getOrDefault(p1, 0L) + candidates.getOrDefault(p, 0L)
+                    newCandidates[p2] = newCandidates.getOrDefault(p2, 0L) + candidates.getOrDefault(p, 0L)
+                } else {
+                    val p1 = p.copy(first = index + 1)
+                    newCandidates[p1] = newCandidates.getOrDefault(p1, 0L) + candidates.getOrDefault(p, 0L)
+                }
+            }.also {
+                println("Processed: ${index}. New candidates size: ${newCandidates.size}")
+            }
+            newCandidates
+        }
+
+    return result.values.sum()
 }
