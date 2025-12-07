@@ -30,22 +30,27 @@ fun traceTachyon(field: List<CharArray>): Trace {
 
     val result = field.drop(1)
         .foldIndexed(Accumulator(candidates = setOf(start))) { index, accumulator, line ->
-            var splitsCounts = 0
-            val newCandidates = accumulator.candidates.flatMap { p ->
+            data class SplitResult(
+                val candidates: Set<Point>,
+                val counter: Int = 0
+            )
+            val result = accumulator.candidates.fold(SplitResult(emptySet(), 0)) { result, p ->
                 if (line[p.col] == '^') {
-                    splitsCounts += 1
-                    listOf(
-                        p.copy(first = index + 1, second = p.col - 1),
-                        p.copy(first = index + 1, second = p.col + 1)
+                    result.copy(
+                        candidates = result.candidates +  setOf(
+                            p.copy(first = index + 1, second = p.col - 1),
+                            p.copy(first = index + 1, second = p.col + 1)
+                        ),
+                        counter = result.counter + 1
                     )
                 } else {
-                    listOf(p.copy(first = index + 1))
+                    result.copy(candidates = result.candidates + setOf(p.copy(first = index + 1)))
                 }
-            }.toSet()
+            }
             accumulator.copy(
                 trace = accumulator.trace + accumulator.candidates,
-                candidates = newCandidates,
-                splitCounts = accumulator.splitCounts + splitsCounts
+                candidates = result.candidates,
+                splitCounts = accumulator.splitCounts + result.counter
             )
         }
 
@@ -64,6 +69,6 @@ fun visualizeTracing(field: List<CharArray>, trace: Set<Point>): String {
 
 fun part1(input: List<CharArray>): Int {
     val result = traceTachyon(input)
-    visualizeTracing(input, result.points)
+//    visualizeTracing(input, result.points)
     return result.splitCounts
 }
