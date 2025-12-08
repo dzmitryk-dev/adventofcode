@@ -12,6 +12,10 @@ fun main() {
     runPuzzle(1) {
         part1(input, connectionsLimit = 1000, circuitsLimit = 3)
     }
+
+    runPuzzle(2) {
+        part2(input)
+    }
 }
 
 data class Point(val x: Int, val y: Int, val z: Int)
@@ -104,4 +108,60 @@ fun part1(input: List<String>, connectionsLimit: Int, circuitsLimit: Int): Int {
     val circuits = buildCircuits(connections, limit = connectionsLimit)
 
     return circuits.take(circuitsLimit).map { it.size }.reduce { a, b -> a * b }
+}
+
+fun buildFullCircuit(
+    connections: List<Connection>,
+    points: List<Point>
+): Int {
+    val point2circuitId = mutableMapOf<Point, Int>()
+    val circuitId2points = mutableMapOf<Int, MutableSet<Point>>()
+
+    var circuitIdCounter = 0
+
+    var value = 0
+
+    for (connection in connections) {
+        val fromId = point2circuitId[connection.from]
+        val toId = point2circuitId[connection.to]
+
+        when {
+            fromId == null && toId == null -> {
+                point2circuitId[connection.from] = circuitIdCounter
+                point2circuitId[connection.to] = circuitIdCounter
+                circuitId2points[circuitIdCounter] = mutableSetOf(connection.from, connection.to)
+                circuitIdCounter++
+            }
+            fromId != null && toId == null -> {
+                point2circuitId[connection.to] = fromId
+                circuitId2points[fromId]!!.add(connection.to)
+            }
+            fromId == null && toId != null -> {
+                point2circuitId[connection.from] = toId
+                circuitId2points[toId]!!.add(connection.from)
+            }
+            fromId != null && toId != null && fromId != toId -> {
+                val fromPoints = circuitId2points[fromId]!!
+                val toPoints = circuitId2points[toId]!!
+
+                // Merge circuits
+                fromPoints.forEach { p -> point2circuitId[p] = toId }
+                toPoints.addAll(fromPoints)
+                circuitId2points.remove(fromId)
+            }
+        }
+
+        if (circuitId2points.size == 1 && circuitId2points.entries.first().value.containsAll(points)) {
+            value = connection.from.x * connection.to.x
+            break
+        }
+    }
+
+    return value
+}
+
+fun part2(input: List<String>): Int {
+    val points = parseInput(input)
+    val connections = buildConnections(points)
+    return buildFullCircuit(connections, points)
 }

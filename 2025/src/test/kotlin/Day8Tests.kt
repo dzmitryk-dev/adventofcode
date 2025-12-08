@@ -3,6 +3,7 @@ import day8.buildCircuits
 import day8.buildConnections
 import day8.parseInput
 import day8.part1
+import day8.part2
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 
@@ -57,6 +58,12 @@ class Day8Tests {
         assertThat(actual).isEqualTo(40)
     }
 
+    @Test
+    fun testPart2() {
+        val actual = part2(testInput.lines())
+
+        assertThat(actual).isEqualTo(25272)
+    }
 
 
     companion object {
