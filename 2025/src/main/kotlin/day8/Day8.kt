@@ -22,10 +22,6 @@ data class Point(val x: Int, val y: Int, val z: Int)
 
 data class Connection(val from: Point, val to: Point, val distance: Double)
 
-fun Connection.toCircuit(): Set<Point> {
-    return setOf(from, to)
-}
-
 fun parseInput(input: List<String>): List<Point> {
     return input.map { l ->
         l.split(",").let { (x, y, z) ->
