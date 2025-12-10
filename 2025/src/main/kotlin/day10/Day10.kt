@@ -1,16 +1,20 @@
 package day10
 
 import com.adventofcode.utils.readInput
+import com.adventofcode.utils.runPuzzle
 import java.util.BitSet
 
 fun main() {
     val input = readInput("day10.input")
-    println("Day 10 solution goes here.")
+
+    runPuzzle(1) {
+        part1(input)
+    }
 }
 
 data class MachineState(
     val expectedIndicator: BitSet,
-    val buttons: Array<BitSet>,
+    val buttons: Array<ByteArray>,
     val joltage: IntArray
 ) {
     override fun equals(other: Any?): Boolean {
@@ -20,7 +24,7 @@ data class MachineState(
         other as MachineState
 
         if (expectedIndicator != other.expectedIndicator) return false
-        if (!buttons.contentEquals(other.buttons)) return false
+        if (!buttons.contentDeepEquals(other.buttons)) return false
         if (!joltage.contentEquals(other.joltage)) return false
 
         return true
@@ -28,7 +32,7 @@ data class MachineState(
 
     override fun hashCode(): Int {
         var result = expectedIndicator.hashCode()
-        result = 31 * result + buttons.contentHashCode()
+        result = 31 * result + buttons.contentDeepHashCode()
         result = 31 * result + joltage.contentHashCode()
         return result
     }
@@ -52,9 +56,7 @@ fun parseInput(input: List<String>): List<MachineState> {
         val parenthesesContents = """\(([^)]+)\)""".toRegex().findAll(line).map { it.groupValues[1] }.toList()
         // Result: ["3", "1,3", "2", "2,3", "0,2", "0,1"]
         val buttons = parenthesesContents.map { s ->
-            BitSet().apply {
-                s.split(",").forEach { this.set(it.toInt()) }
-            }
+            s.split(",").map { it.toByte() }.toByteArray()
         }.toTypedArray()
 
         // Extract content within {}
@@ -68,4 +70,33 @@ fun parseInput(input: List<String>): List<MachineState> {
             joltage = joltage // Convert braceContent to IntArray
         )
     }
+}
+
+tailrec fun findButtonCombinations(
+    expected: BitSet,
+    buttons: Array<ByteArray>,
+    generation: Set<BitSet> = setOf(BitSet()),
+    generationCounter: Int = 0,
+): Int {
+    val nextGeneration = generation.flatMap { state ->
+        buttons.map { button ->
+            val newState = state.clone() as BitSet
+            button.forEach { index ->
+                newState.flip(index.toInt())
+            }
+            newState
+        }
+    }.toSet()
+    val nextGenerationCounter = generationCounter + 1
+    return if (nextGeneration.contains(expected)) {
+        nextGenerationCounter
+    } else {
+       findButtonCombinations(expected, buttons, nextGeneration, nextGenerationCounter)
+    }
+}
+
+fun part1(input: List<String>): Long {
+    return parseInput(input).map { machineState ->
+        findButtonCombinations(machineState.expectedIndicator, machineState.buttons)
+    }.sumOf { it.toLong() }
 }
