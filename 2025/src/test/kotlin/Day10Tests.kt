@@ -3,7 +3,9 @@ import day10.findButtonCombinations
 import day10.parseInput
 import day10.part1
 import day10.part2
+import day10.part2Optimized
 import day10.solveJoltageProblem
+import day10.solveJoltageProblemV2
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -89,6 +91,24 @@ class Day10Tests {
     @Test
     fun testPart2() {
         val actual = part2(testInput.lines())
+
+        assertThat(actual).isEqualTo(33)
+    }
+
+    @ParameterizedTest
+    @MethodSource("testingsolveJoltageProblemInput")
+    fun testSolveJoltageProblemV2(input: Pair<MachineState, Int>) {
+        val (machineState, expected) = input
+
+        val actual = solveJoltageProblemV2(machineState.buttons, machineState.joltage)
+
+        assertThat(actual).isEqualTo(expected)
+    }
+
+
+    @Test
+    fun testPart2Optimized() {
+        val actual = part2Optimized(testInput.lines())
 
         assertThat(actual).isEqualTo(33)
     }

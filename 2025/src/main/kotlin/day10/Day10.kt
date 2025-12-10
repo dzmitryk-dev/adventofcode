@@ -2,6 +2,10 @@ package day10
 
 import com.adventofcode.utils.readInput
 import com.adventofcode.utils.runPuzzle
+import com.microsoft.z3.ArithExpr
+import com.microsoft.z3.Context
+import com.microsoft.z3.IntNum
+import com.microsoft.z3.Status
 import java.util.BitSet
 
 fun main() {
@@ -12,7 +16,7 @@ fun main() {
     }
 
     runPuzzle(2) {
-        part2(input)
+        part2Optimized(input)
     }
 }
 
@@ -158,4 +162,94 @@ fun solveJoltageProblem(buttons: Array<ByteArray>, targetJoltages: IntArray): In
     }
 
     return -1
+}
+
+// Part 2 Optimized - Uses Z3 SMT Solver
+
+fun part2Optimized(input: List<String>): Long {
+    return parseInput(input).sumOf { machineState ->
+        solveJoltageProblemV2(machineState.buttons, machineState.joltage).toLong()
+    }
+}
+
+/**
+ * Solves the joltage problem using Z3 SMT solver.
+ * 
+ * The problem is modeled as a system of linear equations:
+ * - Variables: number of times each button is pressed
+ * - Constraints: sum of button presses affecting each counter must equal target joltage
+ * - Objective: minimize total button presses
+ * 
+ * Example: For buttons [(3), (1,3), (2)] and target joltages [3, 5, 4, 7]:
+ * - Let x0, x1, x2, ... be the number of times each button is pressed
+ * - Counter 0: x5 + x6 = 3 (buttons (0,2) and (0,1) affect counter 0)
+ * - Counter 1: x1 + x6 = 5 (buttons (1,3) and (0,1) affect counter 1)
+ * - Counter 2: x2 + x3 + x4 + x5 = 4 (multiple buttons affect counter 2)
+ * - Counter 3: x0 + x1 + x3 = 7 (buttons (3), (1,3), and (2,3) affect counter 3)
+ * - Minimize: x0 + x1 + x2 + x3 + x4 + x5 + x6
+ * 
+ * Z3 efficiently solves this integer linear programming problem.
+ */
+fun solveJoltageProblemV2(buttons: Array<ByteArray>, targetJoltages: IntArray): Int {
+    val ctx = Context()
+    val solver = ctx.mkOptimize()
+    
+    // Create integer variables for each button (number of times pressed)
+    val buttonPresses = buttons.indices.map { i ->
+        ctx.mkIntConst("button_$i")
+    }
+    
+    // Each button press count must be non-negative
+    buttonPresses.forEach { buttonVar ->
+        solver.Add(ctx.mkGe(buttonVar, ctx.mkInt(0)))
+    }
+    
+    // For each counter/joltage requirement, add constraint
+    targetJoltages.indices.forEach { counterIdx ->
+        val counterContributions = mutableListOf<ArithExpr<*>>()
+        
+        // Find which buttons affect this counter
+        buttons.forEachIndexed { buttonIdx, button ->
+            if (button.contains(counterIdx.toByte())) {
+                counterContributions.add(buttonPresses[buttonIdx])
+            }
+        }
+        
+        if (counterContributions.isNotEmpty()) {
+            // Sum of button presses for this counter must equal target
+            val sum = if (counterContributions.size == 1) {
+                counterContributions[0]
+            } else {
+                ctx.mkAdd(*counterContributions.toTypedArray())
+            }
+            solver.Add(ctx.mkEq(sum, ctx.mkInt(targetJoltages[counterIdx])))
+        } else {
+            // If no button affects this counter, it must be 0
+            if (targetJoltages[counterIdx] != 0) {
+                ctx.close()
+                return -1 // No solution possible
+            }
+        }
+    }
+    
+    // Minimize total button presses
+    val totalPresses = if (buttonPresses.size == 1) {
+        buttonPresses[0]
+    } else {
+        ctx.mkAdd(*buttonPresses.toTypedArray())
+    }
+    solver.MkMinimize(totalPresses)
+    
+    val result = solver.Check()
+    
+    val answer = if (result == Status.SATISFIABLE) {
+        val model = solver.model
+        val total = model.eval(totalPresses, false) as IntNum
+        total.int
+    } else {
+        -1
+    }
+    
+    ctx.close()
+    return answer
 }
