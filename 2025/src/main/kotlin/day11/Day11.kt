@@ -53,7 +53,7 @@ fun countPaths2(graph: Map<String, List<String>>, start: String, end: String): I
     return search(graph, mapOf(start to 1), end)
 }
 
-fun part2(graph: Map<String, List<String>>): Int {
+fun part2(graph: Map<String, List<String>>): Long {
     val a = countPaths2(graph, start = "svr", end = "fft")
     val b = countPaths2(graph, start = "fft", end = "dac")
     val c = countPaths2(graph, start = "dac", end = "out")
@@ -62,5 +62,5 @@ fun part2(graph: Map<String, List<String>>): Int {
     val b2 = countPaths2(graph, start = "dac", end = "fft")
     val c2 = countPaths2(graph, start = "fft", end = "out")
 
-    return a * b * c + a1 * b2 * c2
+    return a.toLong() * b * c + a1.toLong() * b2 * c2
 }
